@@ -1,85 +1,72 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Voter Registration</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Voter Confirmation</title>
 </head>
 <body>
-    <h2>Voter Registration</h2>
-    <form id="voterForm">
-        <label for="password">Password:</label>
-        <input type="password" id="password" required><br><br>
+  <h1>Voter Confirmation</h1>
+  
+  <form id="voterForm">
+    <label for="voterName">Voter Name:</label>
+    <input type="text" id="voterName" disabled><br><br>
 
-        <label for="handler">Handler Name:</label>
-        <input type="text" id="handler" required><br><br>
+    <label for="password">Password:</label>
+    <input type="password" id="password" required><br><br>
 
-        <div id="voterNameContainer" style="display:none;">
-            <label for="voterName">Voter Name:</label>
-            <input type="text" id="voterName" disabled><br><br>
-        </div>
+    <button type="submit">Submit</button>
+  </form>
 
-        <button type="submit">Submit</button>
-    </form>
+  <div id="successMessage" style="display:none;">
+    <h2>Successfully Received</h2>
+  </div>
 
-    <div id="statusMessage" style="display:none;">
-        <h3 id="messageText"></h3>
-    </div>
+  <script>
+    // Fetch voter data from URL parameters
+    function getQueryParam(param) {
+      const urlParams = new URLSearchParams(window.location.search);
+      return urlParams.get(param);
+    }
 
-    <script>
-        function getQueryParam(param) {
-    const urlParams = new URLSearchParams(window.location.search);
-    return urlParams.get(param);
-}
+    // Populate voter name
+    const voterName = getQueryParam('name');
+    const voterId = getQueryParam('id');
+    
+    if (voterName && voterId) {
+      document.getElementById('voterName').value = voterName;
+    } else {
+      alert("Invalid voter URL.");
+    }
 
-// Fetch voter data from the URL
-const voterData = {
-    id: getQueryParam('id'), // Example: ?id=VoterID12345
-    name: getQueryParam('name') // Example: ?name=John%20Doe
-};
+    // Handle form submission
+    document.getElementById('voterForm').onsubmit = async function (e) {
+      e.preventDefault();
 
-if (voterData.id && voterData.name) {
-    console.log("Voter ID:", voterData.id);
-    console.log("Voter Name:", voterData.name);
-} else {
-    alert('Missing voter information in the URL.');
-}
+      const password = document.getElementById('password').value;
 
-        // Password Validation
-        const validPasswords = ['Francis123', 'Olog123'];
+      // Validate password
+      if (password === 'Francis123' || password === 'Olog123') {
+        document.getElementById('successMessage').style.display = 'block';
 
-        // Handle Form Submission
-        document.getElementById('voterForm').onsubmit = async function (e) {
-            e.preventDefault();
+        // Send data to Google Sheets
+        await updateGoogleSheet(voterId, voterName);
+      } else {
+        alert('Invalid password!');
+      }
+    };
 
-            const password = document.getElementById('password').value;
-            const handlerName = document.getElementById('handler').value;
-
-            if (validPasswords.includes(password)) {
-                // Show Voter Name
-                document.getElementById('voterName').value = voterData.name;
-                document.getElementById('voterNameContainer').style.display = 'block';
-                document.getElementById('statusMessage').style.display = 'block';
-                document.getElementById('messageText').innerText = 'Successfully Received';
-                
-                // Send Data to Google Sheets via Google Apps Script (see below)
-                await submitToGoogleSheets(voterData.id, voterData.name, handlerName, password);
-            } else {
-                alert('Invalid password!');
-            }
-        };
-
-        // Function to Submit Data to Google Sheets
-        async function submitToGoogleSheets(voterId, voterName, handlerName, password) {
-            const url = `https://script.google.com/macros/s/AKfycbx1uPF7j4QKorgjeZRTGr2i_IKHFBP4sdzxqEHyMTRnQ78B9pkV4aw7un5TX4LGkUeZcw/exec`;
-            const response = await fetch(url, {
-                method: 'POST',
-                body: JSON.stringify({ voterId, voterName, handlerName, password }),
-                headers: { 'Content-Type': 'application/json' }
-            });
-            const result = await response.json();
-            console.log(result);
-        }
-    </script>
+    // Update Google Sheet via Google Apps Script
+    async function updateGoogleSheet(voterId, voterName) {
+      const url = 'https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec';
+      const response = await fetch(url, {
+        method: 'POST',
+        body: JSON.stringify({ voterId, voterName, status: 'Yes', timestamp: new Date().toISOString() }),
+        headers: { 'Content-Type': 'application/json' }
+      });
+      const result = await response.json();
+      console.log(result);
+    }
+  </script>
 </body>
 </html>
