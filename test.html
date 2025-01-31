@@ -58,7 +58,7 @@
 
     // Update Google Sheet via Google Apps Script
     async function updateGoogleSheet(voterId, voterName) {
-      const url = 'https://script.google.com/macros/s/AKfycbwk8OXpDlXvYT1jJX-2pp3XXDKRotVh_WpITIY-YjpX/dev';
+      const url = 'https://script.google.com/macros/s/AKfycbxq1upqXnLC6O4oARAgWJKAp0eoUi7wIqDwtkM5jIiRiYnVbEJEMASTvnD8n3mCXY9i/exec';
       const response = await fetch(url, {
         method: 'POST',
         body: JSON.stringify({ voterId, voterName, status: 'Yes', timestamp: new Date().toISOString() }),
