@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voter Registration</title>
+</head>
+<body>
+    <h2>Voter Registration</h2>
+    <form id="voterForm">
+        <label for="password">Password:</label>
+        <input type="password" id="password" required><br><br>
+
+        <label for="handler">Handler Name:</label>
+        <input type="text" id="handler" required><br><br>
+
+        <div id="voterNameContainer" style="display:none;">
+            <label for="voterName">Voter Name:</label>
+            <input type="text" id="voterName" disabled><br><br>
+        </div>
+
+        <button type="submit">Submit</button>
+    </form>
+
+    <div id="statusMessage" style="display:none;">
+        <h3 id="messageText"></h3>
+    </div>
+
+    <script>
+        // Sample Voter Data (replace this with dynamic data from URL)
+        const voterData = {
+            id: 'VoterID12345', // Example Voter ID, you will pull this from the URL
+            name: 'John Doe'    // Example Voter Name
+        };
+
+        // Password Validation
+        const validPasswords = ['Francis123', 'Olog123'];
+
+        // Handle Form Submission
+        document.getElementById('voterForm').onsubmit = async function (e) {
+            e.preventDefault();
+
+            const password = document.getElementById('password').value;
+            const handlerName = document.getElementById('handler').value;
+
+            if (validPasswords.includes(password)) {
+                // Show Voter Name
+                document.getElementById('voterName').value = voterData.name;
+                document.getElementById('voterNameContainer').style.display = 'block';
+                document.getElementById('statusMessage').style.display = 'block';
+                document.getElementById('messageText').innerText = 'Successfully Received';
+                
+                // Send Data to Google Sheets via Google Apps Script (see below)
+                await submitToGoogleSheets(voterData.id, voterData.name, handlerName, password);
+            } else {
+                alert('Invalid password!');
+            }
+        };
+
+        // Function to Submit Data to Google Sheets
+        async function submitToGoogleSheets(voterId, voterName, handlerName, password) {
+            const url = `https://script.google.com/macros/s/your-script-id/exec`;
+            const response = await fetch(url, {
+                method: 'POST',
+                body: JSON.stringify({ voterId, voterName, handlerName, password }),
+                headers: { 'Content-Type': 'application/json' }
+            });
+            const result = await response.json();
+            console.log(result);
+        }
+    </script>
+</body>
+</html>
