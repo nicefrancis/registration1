@@ -59,7 +59,7 @@
 
         // Function to Submit Data to Google Sheets
         async function submitToGoogleSheets(voterId, voterName, handlerName, password) {
-            const url = `https://script.google.com/macros/s/your-script-id/exec`;
+            const url = `https://script.google.com/macros/s/AKfycbx1uPF7j4QKorgjeZRTGr2i_IKHFBP4sdzxqEHyMTRnQ78B9pkV4aw7un5TX4LGkUeZcw/exec`;
             const response = await fetch(url, {
                 method: 'POST',
                 body: JSON.stringify({ voterId, voterName, handlerName, password }),
