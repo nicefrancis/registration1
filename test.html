@@ -27,11 +27,23 @@
     </div>
 
     <script>
-        // Sample Voter Data (replace this with dynamic data from URL)
-        const voterData = {
-            id: 'VoterID12345', // Example Voter ID, you will pull this from the URL
-            name: 'John Doe'    // Example Voter Name
-        };
+        function getQueryParam(param) {
+    const urlParams = new URLSearchParams(window.location.search);
+    return urlParams.get(param);
+}
+
+// Fetch voter data from the URL
+const voterData = {
+    id: getQueryParam('id'), // Example: ?id=VoterID12345
+    name: getQueryParam('name') // Example: ?name=John%20Doe
+};
+
+if (voterData.id && voterData.name) {
+    console.log("Voter ID:", voterData.id);
+    console.log("Voter Name:", voterData.name);
+} else {
+    alert('Missing voter information in the URL.');
+}
 
         // Password Validation
         const validPasswords = ['Francis123', 'Olog123'];
